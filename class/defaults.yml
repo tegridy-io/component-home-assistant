@@ -1,4 +1,68 @@
 parameters:
   home_assistant:
     =_metadata: {}
-    namespace: syn-home-assistant
+
+    namespace:
+      annotations: {}
+      labels: {}
+      name: syn-home-assistant
+
+    images:
+      home_assistant:
+        registry: ghcr.io
+        repository: home-assistant/home-assistant
+        tag: 2024.1.2
+      kubectl:
+        registry: docker.io
+        repository: rancher/kubectl
+        tag: v1.28.4
+
+    replicaCount: 1
+
+    resources:
+      home_assistant:
+        requests: {}
+        limits: {}
+
+    storage:
+      class: ''
+      size: 10Gi
+
+    monitoring:
+      enabled: true
+      service: {}
+
+    ingress:
+      enabled: false
+      host: home-assistant.local
+      tls:
+        enabled: true
+        issuer: 'letsencrypt-production'
+
+    config:
+      enabled: false
+      content: |-
+        # Loads default set of integrations. Do not remove.
+        default_config:
+
+        # Home Assistat configuration.
+        http:
+          use_x_forwarded_for: true
+          trusted_proxies:
+          - 10.128.0.0/14
+          ip_ban_enabled: true
+          login_attempts_threshold: 5
+
+        # Enable websockets.
+        websocket_api:
+
+        # Enable prometheus
+        prometheus:
+          requires_auth: false
+
+        # Load frontend themes from the themes folder
+        frontend:
+          themes: !include_dir_merge_named themes
+        automation: !include automations.yaml
+        script: !include scripts.yaml
+        scene: !include scenes.yaml
