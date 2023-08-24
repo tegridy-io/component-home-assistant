@@ -1,4 +1,18 @@
 parameters:
   home_assistant:
     =_metadata: {}
+
     namespace: syn-home-assistant
+
+    images:
+      home_assistant:
+        registry: ghcr.io
+        repository: home-assistant/home-assistant
+        tag: 2023.8.4
+
+    replicaCount: 1
+
+    resources:
+      home_assistant:
+        requests: {}
+        limits: {}
