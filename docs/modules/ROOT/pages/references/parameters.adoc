@@ -1,0 +1,19 @@
+= Parameters
+
+The parent key for all of the following parameters is `home_assistant`.
+
+== `namespace`
+
+[horizontal]
+type:: string
+default:: `syn-home-assistant`
+
+The namespace in which to deploy this component.
+
+
+== Example
+
+[source,yaml]
+----
+namespace: example-namespace
+----

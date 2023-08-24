@@ -1,0 +1,25 @@
+{
+  "template": "https://github.com/projectsyn/commodore-component-template.git",
+  "commit": "dcae06138d227340acb8056d0d031f32d75c09b5",
+  "checkout": "main",
+  "context": {
+    "cookiecutter": {
+      "name": "Home Assistant",
+      "slug": "home-assistant",
+      "parameter_key": "home_assistant",
+      "test_cases": "defaults",
+      "add_lib": "n",
+      "add_pp": "n",
+      "add_golden": "y",
+      "add_matrix": "y",
+      "add_go_unit": "n",
+      "copyright_holder": "VSHN AG <info@vshn.ch>",
+      "copyright_year": "2023",
+      "github_owner": "tegridy-io",
+      "github_name": "component-home-assistant",
+      "github_url": "https://github.com/tegridy-io/component-home-assistant",
+      "_template": "https://github.com/projectsyn/commodore-component-template.git"
+    }
+  },
+  "directory": null
+}

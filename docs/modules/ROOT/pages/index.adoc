@@ -1,0 +1,5 @@
+= Home Assistant
+
+home-assistant is a Commodore component to manage Home Assistant.
+
+See the xref:references/parameters.adoc[parameters] reference for further details.

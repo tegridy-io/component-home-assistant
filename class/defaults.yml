@@ -1,0 +1,4 @@
+parameters:
+  home_assistant:
+    =_metadata: {}
+    namespace: syn-home-assistant
