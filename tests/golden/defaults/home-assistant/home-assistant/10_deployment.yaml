@@ -1,0 +1,86 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  annotations: {}
+  labels:
+    name: home-assistant
+  name: home-assistant
+spec:
+  minReadySeconds: 30
+  replicas: 1
+  revisionHistoryLimit: 10
+  selector:
+    matchLabels:
+      name: home-assistant
+  strategy:
+    rollingUpdate:
+      maxSurge: 0
+      maxUnavailable: 1
+    type: RollingUpdate
+  template:
+    metadata:
+      annotations: {}
+      labels:
+        name: home-assistant
+    spec:
+      containers:
+        - args: []
+          env:
+            - name: TC
+              value: UTC
+          image: ghcr.io/home-assistant/home-assistant:2023.8.4
+          imagePullPolicy: IfNotPresent
+          livenessProbe:
+            failureThreshold: 3
+            initialDelaySeconds: 0
+            periodSeconds: 10
+            tcpSocket:
+              port: 8123
+            timeoutSeconds: 1
+          name: home-assistant
+          ports:
+            - containerPort: 8123
+              name: http
+          readinessProbe:
+            failureThreshold: 3
+            initialDelaySeconds: 0
+            periodSeconds: 10
+            tcpSocket:
+              port: 8123
+            timeoutSeconds: 1
+          resources:
+            limits: {}
+            requests: {}
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop:
+                - ALL
+          startupProbe:
+            failureThreshold: 30
+            initialDelaySeconds: 0
+            periodSeconds: 5
+            tcpSocket:
+              port: 8123
+            timeoutSeconds: 1
+          stdin: false
+          tty: false
+          volumeMounts:
+            - mountPath: /config
+              name: config
+              subPath: configuration.yaml
+            - mountPath: /config
+              name: data
+      imagePullSecrets: []
+      initContainers: []
+      securityContext:
+        seccompProfile:
+          type: RuntimeDefault
+      serviceAccountName: default
+      terminationGracePeriodSeconds: 30
+      volumes:
+        - configMap:
+            name: home-assistant-config
+          name: config
+        - name: data
+          persistentVolumeClaim: home-assistant-data
