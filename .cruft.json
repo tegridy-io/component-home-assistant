@@ -1,13 +1,13 @@
 {
   "template": "https://github.com/projectsyn/commodore-component-template.git",
-  "commit": "dcae06138d227340acb8056d0d031f32d75c09b5",
+  "commit": "7803d07f1d79fc8b902fcafbb336b6b0a4b57b90",
   "checkout": "main",
   "context": {
     "cookiecutter": {
       "name": "Home Assistant",
       "slug": "home-assistant",
       "parameter_key": "home_assistant",
-      "test_cases": "defaults",
+      "test_cases": "defaults instances",
       "add_lib": "n",
       "add_pp": "n",
       "add_golden": "y",

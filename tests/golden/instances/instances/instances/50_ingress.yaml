@@ -4,9 +4,9 @@ metadata:
   annotations:
     cert-manager.io/cluster-issuer: letsencrypt-production
   labels:
-    app.kubernetes.io/instance: home-assistant
+    app.kubernetes.io/component: application
+    app.kubernetes.io/instance: instances
     app.kubernetes.io/managed-by: commodore
-    app.kubernetes.io/name: home-assistant
     name: home-assistant
   name: home-assistant
 spec:

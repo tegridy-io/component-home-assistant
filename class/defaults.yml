@@ -1,17 +1,22 @@
 parameters:
   home_assistant:
-    =_metadata: {}
+    =_metadata:
+      multi_instance: true
 
     namespace:
       annotations: {}
       labels: {}
-      name: syn-home-assistant
+      name: ${_instance}
 
     images:
       home_assistant:
         registry: ghcr.io
         repository: home-assistant/home-assistant
         tag: 2024.1.2
+      influxdb:
+        registry: docker.io
+        repository: influxdb
+        tag: 2.7.5
       kubectl:
         registry: docker.io
         repository: rancher/kubectl
@@ -23,13 +28,22 @@ parameters:
       home_assistant:
         requests: {}
         limits: {}
+      influxdb:
+        requests: {}
+        limits: {}
 
     storage:
-      class: ''
-      size: 10Gi
+      home_assistant:
+        mode: ReadWriteOnce
+        size: 1Gi
+        class: ''
+      influxdb:
+        mode: ReadWriteOnce
+        size: 10Gi
+        class: ''
 
-    monitoring:
-      enabled: true
+    prometheus:
+      enabled: false
       service: {}
 
     ingress:
@@ -41,28 +55,8 @@ parameters:
 
     config:
       enabled: false
-      content: |-
-        # Loads default set of integrations. Do not remove.
-        default_config:
+      extra: ""
 
-        # Home Assistat configuration.
-        http:
-          use_x_forwarded_for: true
-          trusted_proxies:
-          - 10.128.0.0/14
-          ip_ban_enabled: true
-          login_attempts_threshold: 5
-
-        # Enable websockets.
-        websocket_api:
-
-        # Enable prometheus
-        prometheus:
-          requires_auth: false
-
-        # Load frontend themes from the themes folder
-        frontend:
-          themes: !include_dir_merge_named themes
-        automation: !include automations.yaml
-        script: !include scripts.yaml
-        scene: !include scenes.yaml
+    influxdb:
+      enabled: true
+      retention: '50w'

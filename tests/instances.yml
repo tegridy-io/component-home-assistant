@@ -1,0 +1,8 @@
+# Overwrite parameters here
+
+parameters:
+  instances:
+    ingress:
+      enabled: true
+    config:
+      enabled: true

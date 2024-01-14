@@ -1,0 +1,161 @@
+apiVersion: v1
+data:
+  configuration.yaml: |+
+    # Loads default set of integrations. Do not remove.
+    default_config:
+
+    # Home Assistat configuration.
+    http:
+      use_x_forwarded_for: true
+      trusted_proxies:
+      - 10.128.0.0/14
+      ip_ban_enabled: true
+      login_attempts_threshold: 5
+
+    # Load frontend themes from the themes folder
+    frontend:
+      themes: !include_dir_merge_named themes
+    automation: !include automations.yaml
+    script: !include scripts.yaml
+    scene: !include scenes.yaml
+
+    # Enable websockets.
+    websocket_api:
+
+    # Enable prometheus
+
+
+    # Enable influxdb
+    influxdb:
+      api_version: 2
+      ssl: false
+      host: influxdb.svc
+      port: 8086
+      token: aiCah1Ahw6Lieb9ohsh9Tiesh1wuNgei
+      organization: homeassistant
+      bucket: homeassistant
+      tags:
+        source: HA
+      tags_attributes:
+        - friendly_name
+      default_measurement: units
+
+
+kind: ConfigMap
+metadata:
+  annotations: {}
+  labels:
+    app.kubernetes.io/component: application
+    app.kubernetes.io/instance: defaults
+    app.kubernetes.io/managed-by: commodore
+    name: home-assistant-config
+  name: home-assistant-config
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  annotations:
+    volume.beta.kubernetes.io/storage-class: ''
+  labels:
+    app.kubernetes.io/component: application
+    app.kubernetes.io/instance: defaults
+    app.kubernetes.io/managed-by: commodore
+    name: home-assistant-config
+  name: home-assistant-config
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 1Gi
+  storageClassName: ''
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  annotations: {}
+  labels:
+    app.kubernetes.io/component: application
+    app.kubernetes.io/instance: defaults
+    app.kubernetes.io/managed-by: commodore
+    checksum/config: 6325fe89ee4697cd1b2c202fadfae314
+    name: home-assistant
+  name: home-assistant
+spec:
+  minReadySeconds: 30
+  replicas: 1
+  revisionHistoryLimit: 10
+  selector:
+    matchLabels:
+      app.kubernetes.io/component: application
+      app.kubernetes.io/instance: defaults
+  strategy:
+    rollingUpdate:
+      maxSurge: 0
+      maxUnavailable: 1
+    type: RollingUpdate
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/component: application
+        app.kubernetes.io/instance: defaults
+    spec:
+      containers:
+        - args: []
+          env:
+            - name: TC
+              value: UTC
+          image: ghcr.io/home-assistant/home-assistant:2024.1.2
+          imagePullPolicy: IfNotPresent
+          livenessProbe:
+            failureThreshold: 3
+            initialDelaySeconds: 0
+            periodSeconds: 10
+            tcpSocket:
+              port: 8123
+            timeoutSeconds: 1
+          name: home-assistant
+          ports:
+            - containerPort: 8123
+              name: http
+          readinessProbe:
+            failureThreshold: 3
+            initialDelaySeconds: 0
+            periodSeconds: 10
+            tcpSocket:
+              port: 8123
+            timeoutSeconds: 1
+          resources:
+            limits: {}
+            requests: {}
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop:
+                - ALL
+          startupProbe:
+            failureThreshold: 30
+            initialDelaySeconds: 0
+            periodSeconds: 5
+            tcpSocket:
+              port: 8123
+            timeoutSeconds: 1
+          stdin: false
+          tty: false
+          volumeMounts:
+            - mountPath: /config
+              name: data
+      imagePullSecrets: []
+      initContainers: []
+      securityContext:
+        seccompProfile:
+          type: RuntimeDefault
+      serviceAccountName: default
+      terminationGracePeriodSeconds: 30
+      volumes:
+        - configMap:
+            name: home-assistant-config
+          name: config
+        - name: data
+          persistentVolumeClaim:
+            claimName: home-assistant-config

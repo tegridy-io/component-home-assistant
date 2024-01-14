@@ -3,8 +3,8 @@ local inv = kap.inventory();
 local params = inv.parameters.home_assistant;
 local argocd = import 'lib/argocd.libjsonnet';
 
-local app = argocd.App('home-assistant', params.namespace.name);
+local app = argocd.App(inv.parameters._instance, params.namespace.name);
 
 {
-  'home-assistant': app,
+  [inv.parameters._instance]: app,
 }
