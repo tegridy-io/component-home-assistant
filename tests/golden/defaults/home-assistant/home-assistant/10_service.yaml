@@ -1,0 +1,22 @@
+apiVersion: v1
+kind: Service
+metadata:
+  annotations: {}
+  labels:
+    app.kubernetes.io/instance: home-assistant
+    app.kubernetes.io/managed-by: commodore
+    app.kubernetes.io/name: home-assistant
+    name: home-assistant
+  name: home-assistant
+spec:
+  ports:
+    - name: http
+      port: 8123
+      targetPort: 8123
+  selector:
+    app.kubernetes.io/instance: home-assistant
+    app.kubernetes.io/managed-by: commodore
+    app.kubernetes.io/name: home-assistant
+    checksum/config: 9e365dfd890d7d80033b20bf61d3bfcd
+    name: home-assistant
+  type: ClusterIP

@@ -1,0 +1,34 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  annotations:
+    cert-manager.io/cluster-issuer: letsencrypt-production
+  labels:
+    app.kubernetes.io/instance: home-assistant
+    app.kubernetes.io/managed-by: commodore
+    app.kubernetes.io/name: home-assistant
+    name: home-assistant
+  name: home-assistant
+spec:
+  rules:
+    - host: home-assistant.local
+      http:
+        paths:
+          - backend:
+              service:
+                name: home-assistant
+                port:
+                  name: http
+            path: /
+            pathType: Prefix
+          - backend:
+              service:
+                name: home-assistant
+                port:
+                  number: 8080
+            path: /api/prometheus
+            pathType: Prefix
+  tls:
+    - hosts:
+        - home-assistant.local
+      secretName: home-assistant-tls
