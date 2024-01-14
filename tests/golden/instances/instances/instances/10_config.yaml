@@ -29,7 +29,7 @@ kind: ConfigMap
 metadata:
   annotations: {}
   labels:
-    app.kubernetes.io/instance: home-assistant
+    app.kubernetes.io/instance: instances
     app.kubernetes.io/managed-by: commodore
     app.kubernetes.io/name: home-assistant
     name: home-assistant-config
@@ -41,7 +41,7 @@ metadata:
   annotations:
     volume.beta.kubernetes.io/storage-class: ''
   labels:
-    app.kubernetes.io/instance: home-assistant
+    app.kubernetes.io/instance: instances
     app.kubernetes.io/managed-by: commodore
     app.kubernetes.io/name: home-assistant
     name: home-assistant-config

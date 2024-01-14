@@ -3,7 +3,7 @@ kind: Deployment
 metadata:
   annotations: {}
   labels:
-    app.kubernetes.io/instance: home-assistant
+    app.kubernetes.io/instance: defaults
     app.kubernetes.io/managed-by: commodore
     app.kubernetes.io/name: home-assistant
     checksum/config: 9e365dfd890d7d80033b20bf61d3bfcd
@@ -15,7 +15,7 @@ spec:
   revisionHistoryLimit: 10
   selector:
     matchLabels:
-      app.kubernetes.io/instance: home-assistant
+      app.kubernetes.io/instance: defaults
       app.kubernetes.io/managed-by: commodore
       app.kubernetes.io/name: home-assistant
       checksum/config: 9e365dfd890d7d80033b20bf61d3bfcd
@@ -29,7 +29,7 @@ spec:
     metadata:
       annotations: {}
       labels:
-        app.kubernetes.io/instance: home-assistant
+        app.kubernetes.io/instance: defaults
         app.kubernetes.io/managed-by: commodore
         app.kubernetes.io/name: home-assistant
         checksum/config: 9e365dfd890d7d80033b20bf61d3bfcd
@@ -81,24 +81,7 @@ spec:
             - mountPath: /config
               name: data
       imagePullSecrets: []
-      initContainers:
-        - args:
-            - -c
-            - cp -Rf /from/* /config/
-          cmd:
-            - sh
-          env: []
-          image: docker.io/rancher/kubectl:v1.28.4
-          imagePullPolicy: IfNotPresent
-          name: copy
-          ports: []
-          stdin: false
-          tty: false
-          volumeMounts:
-            - mountPath: /from
-              name: config
-            - mountPath: /config
-              name: data
+      initContainers: []
       securityContext:
         seccompProfile:
           type: RuntimeDefault

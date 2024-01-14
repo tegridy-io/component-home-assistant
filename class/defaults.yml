@@ -1,11 +1,12 @@
 parameters:
   home_assistant:
-    =_metadata: {}
+    =_metadata:
+      multi_instance: true
 
     namespace:
       annotations: {}
       labels: {}
-      name: syn-home-assistant
+      name: ${_instance}
 
     images:
       home_assistant:

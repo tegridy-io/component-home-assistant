@@ -5,7 +5,7 @@ local inv = kap.inventory();
 
 // The hiera parameters for the component
 local params = inv.parameters.home_assistant;
-local appName = 'home-assistant';
+local app_name = inv.parameters._instance;
 
 local namespace = kube.Namespace(params.namespace.name) {
   metadata+: {
@@ -20,7 +20,7 @@ local namespace = kube.Namespace(params.namespace.name) {
 };
 
 local defaultLabels = {
-  'app.kubernetes.io/instance': 'home-assistant',
+  'app.kubernetes.io/instance': app_name,
   'app.kubernetes.io/managed-by': 'commodore',
   'app.kubernetes.io/name': 'home-assistant',
 };
@@ -44,7 +44,7 @@ local configData = kube.PersistentVolumeClaim('home-assistant-config') {
   storage:: params.storage.size,
 };
 
-local deployment = kube.Deployment(appName) {
+local deployment = kube.Deployment('home-assistant') {
   metadata+: {
     labels+: {
       'checksum/config': std.md5(std.manifestJsonMinified(configMap.data)),
@@ -77,7 +77,7 @@ local deployment = kube.Deployment(appName) {
           },
         },
         containers_:: {
-          default: kube.Container(appName) {
+          default: kube.Container('home-assistant') {
             image: '%(registry)s/%(repository)s:%(tag)s' % params.images.home_assistant,
             env_:: {
               TC: 'UTC',
