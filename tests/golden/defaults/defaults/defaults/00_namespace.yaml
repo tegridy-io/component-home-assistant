@@ -4,6 +4,6 @@ metadata:
   annotations: {}
   labels:
     app.kubernetes.io/managed-by: commodore
-    app.kubernetes.io/name: syn-home-assistant
-    name: syn-home-assistant
-  name: syn-home-assistant
+    app.kubernetes.io/name: defaults
+    name: defaults
+  name: defaults
