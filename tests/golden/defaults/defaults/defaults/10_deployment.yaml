@@ -1,12 +1,84 @@
+apiVersion: v1
+data:
+  configuration.yaml: |+
+    # Loads default set of integrations. Do not remove.
+    default_config:
+
+    # Home Assistat configuration.
+    http:
+      use_x_forwarded_for: true
+      trusted_proxies:
+      - 10.128.0.0/14
+      ip_ban_enabled: true
+      login_attempts_threshold: 5
+
+    # Load frontend themes from the themes folder
+    frontend:
+      themes: !include_dir_merge_named themes
+    automation: !include automations.yaml
+    script: !include scripts.yaml
+    scene: !include scenes.yaml
+
+    # Enable websockets.
+    websocket_api:
+
+    # Enable prometheus
+
+
+    # Enable influxdb
+    influxdb:
+      api_version: 2
+      ssl: false
+      host: influxdb.svc
+      port: 8086
+      token: aiCah1Ahw6Lieb9ohsh9Tiesh1wuNgei
+      organization: homeassistant
+      bucket: homeassistant
+      tags:
+        source: HA
+      tags_attributes:
+        - friendly_name
+      default_measurement: units
+
+
+kind: ConfigMap
+metadata:
+  annotations: {}
+  labels:
+    app.kubernetes.io/component: application
+    app.kubernetes.io/instance: defaults
+    app.kubernetes.io/managed-by: commodore
+    name: home-assistant-config
+  name: home-assistant-config
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  annotations:
+    volume.beta.kubernetes.io/storage-class: ''
+  labels:
+    app.kubernetes.io/component: application
+    app.kubernetes.io/instance: defaults
+    app.kubernetes.io/managed-by: commodore
+    name: home-assistant-config
+  name: home-assistant-config
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 1Gi
+  storageClassName: ''
+---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
   annotations: {}
   labels:
+    app.kubernetes.io/component: application
     app.kubernetes.io/instance: defaults
     app.kubernetes.io/managed-by: commodore
-    app.kubernetes.io/name: home-assistant
-    checksum/config: 9e365dfd890d7d80033b20bf61d3bfcd
+    checksum/config: 6325fe89ee4697cd1b2c202fadfae314
     name: home-assistant
   name: home-assistant
 spec:
@@ -15,11 +87,8 @@ spec:
   revisionHistoryLimit: 10
   selector:
     matchLabels:
+      app.kubernetes.io/component: application
       app.kubernetes.io/instance: defaults
-      app.kubernetes.io/managed-by: commodore
-      app.kubernetes.io/name: home-assistant
-      checksum/config: 9e365dfd890d7d80033b20bf61d3bfcd
-      name: home-assistant
   strategy:
     rollingUpdate:
       maxSurge: 0
@@ -27,13 +96,9 @@ spec:
     type: RollingUpdate
   template:
     metadata:
-      annotations: {}
       labels:
+        app.kubernetes.io/component: application
         app.kubernetes.io/instance: defaults
-        app.kubernetes.io/managed-by: commodore
-        app.kubernetes.io/name: home-assistant
-        checksum/config: 9e365dfd890d7d80033b20bf61d3bfcd
-        name: home-assistant
     spec:
       containers:
         - args: []

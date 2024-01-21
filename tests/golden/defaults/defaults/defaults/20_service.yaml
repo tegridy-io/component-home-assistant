@@ -3,17 +3,17 @@ kind: Service
 metadata:
   annotations: {}
   labels:
-    app.kubernetes.io/component: application
+    app.kubernetes.io/component: database
     app.kubernetes.io/instance: defaults
     app.kubernetes.io/managed-by: commodore
-    name: home-assistant
-  name: home-assistant
+    name: influxdb
+  name: influxdb
 spec:
   ports:
     - name: http
-      port: 8123
-      targetPort: 8123
+      port: 8086
+      targetPort: 8086
   selector:
-    app.kubernetes.io/component: application
+    app.kubernetes.io/component: database
     app.kubernetes.io/instance: defaults
   type: ClusterIP

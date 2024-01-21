@@ -1,0 +1,140 @@
+apiVersion: v1
+data:
+  password: b04xZWU1RGllc2FoZ2hhaTRGb29uMml2bzRpZUpvaGo=
+  token: YWlDYWgxQWh3NkxpZWI5b2hzaDlUaWVzaDF3dU5nZWk=
+kind: Secret
+metadata:
+  annotations: {}
+  labels:
+    app.kubernetes.io/component: database
+    app.kubernetes.io/instance: instances
+    app.kubernetes.io/managed-by: commodore
+    name: influxdb-admin
+  name: influxdb-admin
+type: Opaque
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  annotations:
+    volume.beta.kubernetes.io/storage-class: ''
+  labels:
+    app.kubernetes.io/component: database
+    app.kubernetes.io/instance: instances
+    app.kubernetes.io/managed-by: commodore
+    name: influxdb-data
+  name: influxdb-data
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 10Gi
+  storageClassName: ''
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  annotations: {}
+  labels:
+    app.kubernetes.io/component: database
+    app.kubernetes.io/instance: instances
+    app.kubernetes.io/managed-by: commodore
+    name: influxdb
+  name: influxdb
+spec:
+  minReadySeconds: 30
+  replicas: 1
+  revisionHistoryLimit: 10
+  selector:
+    matchLabels:
+      app.kubernetes.io/component: database
+      app.kubernetes.io/instance: instances
+  strategy:
+    rollingUpdate:
+      maxSurge: 0
+      maxUnavailable: 1
+    type: RollingUpdate
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/component: database
+        app.kubernetes.io/instance: instances
+    spec:
+      containers:
+        - args: []
+          env:
+            - name: DOCKER_INFLUXDB_INIT_ADMIN_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  key: token
+                  name: influxdb-admin
+            - name: DOCKER_INFLUXDB_INIT_BUCKET
+              value: homeassistant
+            - name: DOCKER_INFLUXDB_INIT_MODE
+              value: setup
+            - name: DOCKER_INFLUXDB_INIT_ORG
+              value: homeassistant
+            - name: DOCKER_INFLUXDB_INIT_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  key: password
+                  name: influxdb-admin
+            - name: DOCKER_INFLUXDB_INIT_RETENTION
+              value: 50w
+            - name: DOCKER_INFLUXDB_INIT_USERNAME
+              value: homeassistant
+            - name: INFLUXD_BOLT_PATH
+              value: /var/lib/influxdb2/influxd.bolt
+            - name: INFLUXD_ENGINE_PATH
+              value: /var/lib/influxdb2
+          image: docker.io/influxdb:2.7.5
+          imagePullPolicy: IfNotPresent
+          livenessProbe:
+            failureThreshold: 3
+            httpGet:
+              path: /health
+              port: http
+              scheme: HTTP
+            initialDelaySeconds: 0
+            periodSeconds: 10
+            timeoutSeconds: 1
+          name: influxdb
+          ports:
+            - containerPort: 8086
+              name: http
+          readinessProbe:
+            failureThreshold: 3
+            httpGet:
+              path: /health
+              port: http
+              scheme: HTTP
+            initialDelaySeconds: 0
+            periodSeconds: 10
+            successThreshold: 1
+            timeoutSeconds: 1
+          resources:
+            limits: {}
+            requests: {}
+          securityContext:
+            allowPrivilegeEscalation: false
+          stdin: false
+          tty: false
+          volumeMounts:
+            - mountPath: /var/lib/influxdb2
+              name: data
+            - mountPath: /etc/influxdb2
+              name: etc
+      imagePullSecrets: []
+      initContainers: []
+      securityContext:
+        seccompProfile:
+          type: RuntimeDefault
+      serviceAccountName: default
+      terminationGracePeriodSeconds: 30
+      volumes:
+        - name: data
+          persistentVolumeClaim:
+            claimName: influxdb-data
+        - emptyDir: {}
+          name: etc
