@@ -10,8 +10,8 @@ default::
 +
 [source,yaml]
 ----
-annotations: true
-labels: true
+annotations: {}
+labels: {}
 name: ${_instance}
 ----
 
