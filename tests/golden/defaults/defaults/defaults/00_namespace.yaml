@@ -4,6 +4,6 @@ metadata:
   annotations: {}
   labels:
     app.kubernetes.io/managed-by: commodore
-    app.kubernetes.io/name: defaults
-    name: defaults
-  name: defaults
+    app.kubernetes.io/name: app-defaults
+    name: app-defaults
+  name: app-defaults
