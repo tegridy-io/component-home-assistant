@@ -6,7 +6,7 @@ parameters:
     namespace:
       annotations: {}
       labels: {}
-      name: ${_instance}
+      name: app-${_instance}
 
     images:
       home_assistant:
@@ -22,8 +22,6 @@ parameters:
         repository: rancher/kubectl
         tag: v1.28.5
 
-    replicaCount: 1
-
     resources:
       home_assistant:
         requests: {}
@@ -32,31 +30,28 @@ parameters:
         requests: {}
         limits: {}
 
-    storage:
-      home_assistant:
-        mode: ReadWriteOnce
-        size: 1Gi
-        class: ''
-      influxdb:
-        mode: ReadWriteOnce
-        size: 10Gi
-        class: ''
-
     prometheus:
       enabled: false
       service: {}
 
-    ingress:
-      enabled: false
-      host: home-assistant.local
-      tls:
-        enabled: true
-        issuer: 'letsencrypt-production'
-
     config:
-      enabled: false
-      extra: ""
+      ingress:
+        enabled: false
+        tls: true
+        url: home-assistant.local
+        annotations: {}
+      persistence:
+        mode: ReadWriteOnce
+        size: 1Gi
+        class: ''
+      extra:
+        enabled: false
+        content: ""
 
     influxdb:
       enabled: true
       retention: '50w'
+      persistence:
+        mode: ReadWriteOnce
+        size: 10Gi
+        class: ''

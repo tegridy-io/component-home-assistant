@@ -203,7 +203,7 @@ local configHomeAssistant = kube.ConfigMap('home-assistant-config') {
       # Enable influxdb
       %(influxdb)s
 
-    ||| % varsHomeAssistant + params.config.extra,
+    ||| % varsHomeAssistant + params.config.extra.content,
   },
 };
 
@@ -214,10 +214,10 @@ local pvcHomeAssistant = kube.PersistentVolumeClaim('home-assistant-config') {
     } + labelsHomeAssistant,
   },
   spec+: {
-    accessModes: [ params.storage.home_assistant.mode ],
+    accessModes: [ params.config.persistence.mode ],
   },
-  storageClass:: params.storage.home_assistant.class,
-  storage:: params.storage.home_assistant.size,
+  storageClass:: params.config.persistence.class,
+  storage:: params.config.persistence.size,
 };
 
 local deployHomeAssistant = kube.Deployment('home-assistant') {
@@ -228,7 +228,7 @@ local deployHomeAssistant = kube.Deployment('home-assistant') {
     } + labelsHomeAssistant,
   },
   spec+: {
-    replicas: params.replicaCount,
+    replicas: 1,
     selector: {
       matchLabels: labelsHomeAssistant,
     },
@@ -245,7 +245,7 @@ local deployHomeAssistant = kube.Deployment('home-assistant') {
           default: containerHomeAssistant,
         },
         initContainers_:: {
-          [if params.config.enabled then 'copy-config']: containerConfigCopy,
+          [if params.config.extra.enabled then 'copy-config']: containerConfigCopy,
         },
         volumes_:: {
           config: {
@@ -295,10 +295,10 @@ local pvcDatabase = kube.PersistentVolumeClaim('influxdb-data') {
     } + labelsDatabase,
   },
   spec+: {
-    accessModes: [ params.storage.influxdb.mode ],
+    accessModes: [ params.influxdb.persistence.mode ],
   },
-  storageClass:: params.storage.influxdb.class,
-  storage:: params.storage.influxdb.size,
+  storageClass:: params.influxdb.persistence.class,
+  storage:: params.influxdb.persistence.size,
 };
 
 local deployDatabase = kube.Deployment('influxdb') {
@@ -377,14 +377,14 @@ local serviceMonitor = kube._Object('monitoring.coreos.com/v1', 'ServiceMonitor'
 
 local ingress = kube._Object('networking.k8s.io/v1', 'Ingress', 'home-assistant') {
   metadata+: {
-    [if params.ingress.tls.enabled then 'annotations']: { 'cert-manager.io/cluster-issuer': params.ingress.tls.issuer },
+    annotations+: params.config.ingress.annotations,
     labels+: {
       'app.kubernetes.io/managed-by': 'commodore',
     } + labelsHomeAssistant,
   },
   spec+: {
     rules: [ {
-      host: params.ingress.host,
+      host: params.config.ingress.url,
       http: {
         paths: [ {
           backend: {
@@ -412,8 +412,8 @@ local ingress = kube._Object('networking.k8s.io/v1', 'Ingress', 'home-assistant'
         } ],
       },
     } ],
-    [if params.ingress.tls.enabled then 'tls']: [ {
-      hosts: [ params.ingress.host ],
+    [if params.config.ingress.tls then 'tls']: [ {
+      hosts: [ params.config.ingress.url ],
       secretName: 'home-assistant-tls',
     } ],
   },
@@ -427,5 +427,5 @@ local ingress = kube._Object('networking.k8s.io/v1', 'Ingress', 'home-assistant'
   [if params.prometheus.enabled then '10_monitoring']: serviceMonitor,
   [if params.influxdb.enabled then '20_deployment']: [ secretDatabase, pvcDatabase, deployDatabase ],
   [if params.influxdb.enabled then '20_service']: serviceDatabase,
-  [if params.ingress.enabled then '50_ingress']: ingress,
+  [if params.config.ingress.enabled then '50_ingress']: ingress,
 }

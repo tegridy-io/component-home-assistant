@@ -12,19 +12,10 @@ default::
 ----
 annotations: {}
 labels: {}
-name: ${_instance}
+name: app-${_instance}
 ----
 
 The namespace in which to deploy this component.
-
-
-== `replicaCount`
-
-[horizontal]
-type:: integer
-default:: 1
-
-The number of home-assistant replicas.
 
 
 == `resources`
@@ -46,30 +37,6 @@ influxdb:
 Configure resource requests and limits.
 
 
-== `storage`
-
-[horizontal]
-type:: dictionary
-default::
-+
-[source,yaml]
-----
-home_assistant:
-  mode: ReadWriteOnce <1>
-  size: 1Gi <2>
-  class: '' <3>
-influxdb:
-  mode: ReadWriteOnce
-  size: 10Gi
-  class: ''
-----
-<1> Configure access mode.
-<2> Configure storage requeust.
-<3> Configure storageclass.
-
-Configure persistent volume claims.
-
-
 == `prometheus`
 
 [horizontal]
@@ -87,28 +54,6 @@ service: {} <2>
 Enable/configure service monitor.
 
 
-== `ingress`
-
-[horizontal]
-type:: dictionary
-default::
-+
-[source,yaml]
-----
-enabled: false <1>
-host: home-assistant.local <2>
-tls:
-  enabled: true <3>
-  issuer: 'letsencrypt-production' <4>
-----
-<1> Enable home-assistant ingress.
-<2> Configure URL.
-<3> Enable TLS for ingress.
-<4> Configure cluster-issuer (cert-manager).
-
-Enable/configure home-assistant ingress.
-
-
 == `config`
 
 [horizontal]
@@ -117,13 +62,24 @@ default::
 +
 [source,yaml]
 ----
-enabled: false
-extra: ""
+ingress: <1>
+  enabled: false
+  url: home-assistant.local
+  tls: true
+  annotations: {}
+persistence: <2>
+  mode: ReadWriteOnce
+  size: 1Gi
+  class: ''
+extra: <3>
+  enabled: false
+  content: ""
 ----
-<1> Enable config by configmap.
-<2> Additional configuration.
+<1> Configure home-assistant ingress.
+<2> Configure persistence for home-assistant.
+<2> Enable managing `configuration.yaml` with configmap.
 
-Enable managing `configuration.yaml` with configmap.
+Configure home-assistant.
 
 
 == `influxdb`
@@ -136,9 +92,14 @@ default::
 ----
 enabled: true <1>
 retention: '50w' <2>
+persistence: <3>
+  mode: ReadWriteOnce
+  size: 10Gi
+  class: ''
 ----
 <1> Enable influxdb.
 <2> Configure retention period.
+<3> Configure persistence for influxdb.
 
 Enable/configure influxdb2 as timeseries backend.
 

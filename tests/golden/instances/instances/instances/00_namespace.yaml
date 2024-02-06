@@ -4,6 +4,6 @@ metadata:
   annotations: {}
   labels:
     app.kubernetes.io/managed-by: commodore
-    app.kubernetes.io/name: instances
-    name: instances
-  name: instances
+    app.kubernetes.io/name: app-instances
+    name: app-instances
+  name: app-instances
