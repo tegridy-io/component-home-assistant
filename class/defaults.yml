@@ -20,7 +20,7 @@ parameters:
       kubectl:
         registry: docker.io
         repository: rancher/kubectl
-        tag: v1.28.5
+        tag: v1.29.0
 
     replicaCount: 1
 
