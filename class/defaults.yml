@@ -12,7 +12,7 @@ parameters:
       home_assistant:
         registry: ghcr.io
         repository: home-assistant/home-assistant
-        tag: 2024.2.0
+        tag: 2024.2.1
       influxdb:
         registry: docker.io
         repository: influxdb
