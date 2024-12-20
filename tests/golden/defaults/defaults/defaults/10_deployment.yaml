@@ -105,7 +105,7 @@ spec:
           env:
             - name: TC
               value: UTC
-          image: ghcr.io/home-assistant/home-assistant:2024.7.4
+          image: ghcr.io/home-assistant/home-assistant:2024.12.5
           imagePullPolicy: IfNotPresent
           livenessProbe:
             failureThreshold: 3
