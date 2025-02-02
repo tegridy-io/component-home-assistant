@@ -2,6 +2,7 @@ parameters:
   home_assistant:
     =_metadata:
       multi_instance: true
+      multi_tenant: true
 
     namespace:
       annotations: {}
