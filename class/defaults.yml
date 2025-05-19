@@ -21,7 +21,7 @@ parameters:
       kubectl:
         registry: docker.io
         repository: rancher/kubectl
-        tag: v1.32.5
+        tag: v1.33.1
 
     resources:
       home_assistant:
