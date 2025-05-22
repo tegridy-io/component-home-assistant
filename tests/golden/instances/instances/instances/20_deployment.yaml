@@ -88,7 +88,7 @@ spec:
               value: /var/lib/influxdb2/influxd.bolt
             - name: INFLUXD_ENGINE_PATH
               value: /var/lib/influxdb2
-          image: docker.io/influxdb:2.7.11
+          image: docker.io/influxdb:2.7.12
           imagePullPolicy: IfNotPresent
           livenessProbe:
             failureThreshold: 3
