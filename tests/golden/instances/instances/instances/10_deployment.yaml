@@ -153,7 +153,7 @@ spec:
           cmd:
             - sh
           env: []
-          image: docker.io/rancher/kubectl:v1.32.5
+          image: docker.io/rancher/kubectl:v1.33.1
           imagePullPolicy: IfNotPresent
           name: copy-config
           ports: []
