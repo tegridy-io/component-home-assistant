@@ -17,7 +17,7 @@ parameters:
       influxdb:
         registry: docker.io
         repository: influxdb
-        tag: 2.7.12
+        tag: 2.8.0
       kubectl:
         registry: docker.io
         repository: rancher/kubectl
